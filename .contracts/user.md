@@ -37,16 +37,16 @@ Retorna todos os usuários do sistema.
 * **Resposta de Sucesso:**  
   * **Código HTTP:** 200  
   * **Content:**  
-```json
-{
-  "users": 
-    [
-      {"<user_object>"},
-      {"<user_object>"},
-      {"<user_object>"}
-    ]
-}
-```
+    ```json
+    {
+      "users": 
+        [
+          {"<user_object>"},
+          {"<user_object>"},
+          {"<user_object>"}
+        ]
+    }
+    ```
 
 ### GET /users/{id}
 Retorna o usuário especificado.
@@ -61,27 +61,26 @@ Retorna o usuário especificado.
 * **Resposta de Sucesso:**  
   * **Código HTTP:** 200  
   * **Content:**  
-```json
-{
-    "<user_object>"
-}
-```
+    ```json
+    {
+        "<user_object>"
+    }
+    ```
 * **Resposta de Erro:**  
   * **Código HTTP:** 404  
   * **Content:** 
-```json
-{ 
-    "error" : "Usuário inexistente"
-}
-```
-* &nbsp;
+    ```json
+    { 
+        "error" : "Usuário inexistente"
+    }
+    ```
   * **Código HTTP:** 401  
   * **Content:** 
-```json
-{
-    "error" : "Você não está autorizado a fazer essa solicitação."
-}
-```
+    ```json
+    {
+        "error" : "Você não está autorizado a fazer essa solicitação."
+    }
+    ```
 
 ### POST /users
 Cria um novo usuário.
@@ -101,29 +100,28 @@ Cria um novo usuário.
   Content-Type: application/json  
   Authorization: Bearer `<OAuth Token>`
 * **Resposta de Sucesso:**  
-  **Código HTTP:** 201  
-  **Content:**  
-```json
-{
-    "message": "Usuário criado com sucesso."
-}
-```
+  * **Código HTTP:** 201  
+  * **Content:**  
+    ```json
+    {
+        "message": "Usuário criado com sucesso."
+    }
+    ```
 * **Resposta de Erro:**  
   * **Código HTTP:** 400  
   * **Content:** 
-```json
-{ 
-    "error" : "Erro ao criar usuário."
-}
-```
-* &nbsp;
+    ```json
+    { 
+        "error" : "Erro ao criar usuário."
+    }
+    ```
   * **Código HTTP:** 401  
   * **Content:** 
-```json
-{
-    "error" : "Você não está autorizado a fazer essa solicitação."
-}
-```
+    ```json
+    {
+        "error" : "Você não está autorizado a fazer essa solicitação."
+    }
+    ```
 
 ### PUT /users/{id}
 Atualiza um usuário existente.
@@ -143,37 +141,35 @@ Atualiza um usuário existente.
   Content-Type: application/json  
   Authorization: Bearer `<OAuth Token>`
 * **Resposta de Sucesso:**  
-  **Código HTTP:** 200  
-  **Content:**  
-```json
-{
-    "message": "Usuário atualizado com sucesso."
-}
-```
+  * **Código HTTP:** 200  
+  * **Content:**  
+    ```json
+    {
+        "message": "Usuário atualizado com sucesso."
+    }
+    ```
 * **Resposta de Erro:**  
   * **Código HTTP:** 400  
   * **Content:** 
-```json
-{ 
-    "error" : "Erro ao atualizar usuário."
-}
-```
-* &nbsp;
+    ```json
+    { 
+        "error" : "Erro ao atualizar usuário."
+    }
+    ```
   * **Código HTTP:** 401  
   * **Content:** 
-```json
-{
-    "error" : "Você não está autorizado a fazer essa solicitação."
-}
-```
-* &nbsp;
+    ```json
+    {
+        "error" : "Você não está autorizado a fazer essa solicitação."
+    }
+    ```
   * **Código HTTP:** 404
   * **Content:**  
-```json
-{ 
-    "error" : "Usuário inexistente."
-}
-```
+    ```json
+    { 
+        "error" : "Usuário inexistente."
+    }
+    ```
 
 ### PATCH /users/{id}
 Atualiza um ou mais atributos de um usuário existente.
@@ -193,37 +189,35 @@ Atualiza um ou mais atributos de um usuário existente.
   Content-Type: application/json  
   Authorization: Bearer `<OAuth Token>`
 * **Resposta de Sucesso:**  
-  **Código HTTP:** 200  
-  **Content:**  
-```json
-{
-    "message": "Usuário atualizado com sucesso."
-}
-```
+  * **Código HTTP:** 200  
+  * **Content:**  
+    ```json
+    {
+        "message": "Usuário atualizado com sucesso."
+    }
+    ```
 * **Resposta de Erro:**  
   * **Código HTTP:** 400  
   * **Content:** 
-```json
-{ 
-    "error" : "Erro ao atualizar usuário."
-}
-```
-* &nbsp;
+    ```json
+    { 
+        "error" : "Erro ao atualizar usuário."
+    }
+    ```
   * **Código HTTP:** 401  
   * **Content:** 
-```json
-{
-    "error" : "Você não está autorizado a fazer essa solicitação."
-}
-```
-* &nbsp;
+    ```json
+    {
+        "error" : "Você não está autorizado a fazer essa solicitação."
+    }
+    ```
   * **Código HTTP:** 404
   * **Content:**  
-```json
-{ 
-    "error" : "Usuário inexistente."
-}
-```
+    ```json
+    { 
+        "error" : "Usuário inexistente."
+    }
+    ```
 
 ### DELETE /users/{id}
 Deleta um usuário existente.
@@ -238,35 +232,33 @@ Deleta um usuário existente.
 * **Resposta de Sucesso:**  
   **Código HTTP:** 200  
   **Content:**  
-```json
-{
-    "message": "Usuário deletado com sucesso."
-}
-```
+    ```json
+    {
+        "message": "Usuário deletado com sucesso."
+    }
+    ```
 * **Resposta de Erro:**  
   * **Código HTTP:** 400  
   * **Content:** 
-```json
-{ 
-    "error" : "Erro ao deletar usuário."
-}
-```
-* &nbsp;
+    ```json
+    { 
+        "error" : "Erro ao deletar usuário."
+    }
+    ```
   * **Código HTTP:** 401  
   * **Content:** 
-```json
-{
-    "error" : "Você não está autorizado a fazer essa solicitação."
-}
-```
-* &nbsp;
+    ```json
+    {
+        "error" : "Você não está autorizado a fazer essa solicitação."
+    }
+    ```
   * **Código HTTP:** 404
   * **Content:**  
-```json
-{ 
-    "error" : "Usuário inexistente."
-}
-```
+    ```json
+    { 
+        "error" : "Usuário inexistente."
+    }
+    ```
 
 <hr>
 
