@@ -16,8 +16,6 @@ class UserManager(BaseUserManager):
             role=role,
             **extra_fields
         )
-        user.set_password(password)
-        user.save(using=self._db)
         return user
 
     def create_superuser(self, cpf, email, name, lname, username, status, role, password=None, **extra_fields):
