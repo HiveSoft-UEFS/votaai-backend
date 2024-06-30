@@ -1,6 +1,6 @@
 from django.db import models
-from .userModel import User
-from .pollModel import Poll
+from .user_model import User
+from .poll_model import Poll
 
 
 class Report(models.Model):

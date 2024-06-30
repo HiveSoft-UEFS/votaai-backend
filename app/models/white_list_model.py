@@ -1,7 +1,8 @@
 from django.db import models
-from .userModel import User
-from .pollModel import Poll
+from .user_model import User
+from .poll_model import Poll
 
-class Participation(models.Model):
+
+class Whitelist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)

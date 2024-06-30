@@ -1,8 +1,13 @@
-from django.urls import path
-from .views.userView import create_user
-from .views.voteView import VoteDetailView
+from django.urls import include, path
+from rest_framework import routers
+
+from .views import user_view, vote_view
+
+router = routers.DefaultRouter()
+router.register(r'users', user_view.UserViewSet, basename='User')
+router.register(r'votes', vote_view.VoteViewSet)
 
 urlpatterns = [
-    path('create_user/', create_user, name='create_user'),
-    path('vote/<str:hash>/', VoteDetailView.as_view(), name='vote-detail'),
+    path('', include(router.urls)),
+    path('api/', include('rest_framework.urls', namespace='rest_framework'))
 ]

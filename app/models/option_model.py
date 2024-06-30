@@ -1,5 +1,6 @@
 from django.db import models
-from .questionFieldModel import QuestionField
+from .question_field_model import QuestionField
+
 
 class Option(models.Model):
     text = models.CharField(max_length=255)

@@ -1,5 +1,6 @@
 from django.db import models
-from .pollModel import Poll
+from .poll_model import Poll
+
 
 class QuestionField(models.Model):
     title = models.CharField(max_length=255)
