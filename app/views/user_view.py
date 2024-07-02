@@ -2,37 +2,74 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import viewsets
 from app.serializers.user_serializer import UserSerializer
+from app.services.user_service import UserService
 
 
 class UserViewSet(viewsets.ViewSet):
 
+    _service = UserService()
+
     # GET
     def list(self, request):
-        # Aqui você pode implementar a lógica para lidar com solicitações GET
-        return Response({'message': 'Hello, world 3!'})
+        users = self._service.get_all_users()
+        if users['success']:
+            return Response(users['data'], status=status.HTTP_200_OK)
+        return Response({'error': users['error']}, status=status.HTTP_404_NOT_FOUND)
 
     # GEt
     def retrieve(self, request, pk=None):
-        return Response({'method': 'GET'})
+        # TODO: BUG - se tiver um ponto no pk ele da um erro
+        if not pk:
+            return Response({'error': 'Missing parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if str(pk).isdigit():
+            if len(str(pk)) == 11:
+                user = self._service.get_user_by_cpf(pk)
+            else:
+                user = self._service.get_user_by_id(pk)
+
+        else:
+            if '@' in str(pk):
+                user = self._service.get_user_by_email(pk)
+            else:
+                user = self._service.get_user_by_username(pk)
+
+        if user['success']:
+            return Response(user['data'], status=status.HTTP_200_OK)
+
+        return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
 
     # POST
     def create(self, request):
-        # Aqui você pode implementar a lógica para lidar com solicitações POST
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            new_user = serializer.validated_data
-            queries_user.insert_user(new_user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = self._service.create_user(serializer.data)
+            if user['success']:
+                return Response(user['data'], status=status.HTTP_201_CREATED)
+            return Response({'error': user['error']}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PUT
     def update(self, request, pk=None):
-        return Response({'method': f'PUT for {type(request.data)}'})
+        if not pk:
+            return Response({'error': 'Missing parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = self._service.get_user_by_id(pk)
+        if user['success']:
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                user = self._service.update_user(user['data'], serializer.data)
+                if user['success']:
+                    return Response(user['data'], status=status.HTTP_200_OK)
+                return Response({'error': user['error']}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
 
     # PATCH
     def partial_update(self, request, pk=None):
-        return Response({'method': 'PATCH'})
+        return Response({'error': 'Not Implemented'})
 
     # DELETE
     def destroy(self, request, pk=None):
-        return Response({'method': 'DELETE'})
+        return Response({'error': 'Not Implemented'})

@@ -11,5 +11,9 @@ class Poll(models.Model):
     privacy = models.CharField(max_length=255, choices=[('PUBLIC', 'Public'), ('HIDDEN', 'Hidden'), ('RESTRICTED', 'Restricted')])
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    @property
+    def questions(self):
+        return self.questionfield_set.all()
+
     def __str__(self):
         return self.title

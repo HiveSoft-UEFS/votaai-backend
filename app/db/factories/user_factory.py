@@ -13,5 +13,5 @@ class UserFactory(DjangoModelFactory):
     lname = factory.Faker('last_name')
     username = factory.Faker('user_name')
     status = 'active'
-    role = 'user'
+    role = 'USER'
     password = factory.Faker('password')

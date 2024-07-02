@@ -135,3 +135,8 @@ AUTH_USER_MODEL = 'app.User'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',  # Adicione o seu frontend React
 ]
+
+REST_FRAMEWORK = {
+    'FORMAT_SUFFIX_KWARG': None,
+    'URL_FORMAT_OVERRIDE': None,
+}

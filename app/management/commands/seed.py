@@ -5,5 +5,6 @@ class Command(BaseCommand):
     help = 'Executa a operação de seed'
 
     def handle(self, *args, **options):
-        DatabaseSeeder.seed()
+        dbs = DatabaseSeeder()
+        dbs.seed()
         self.stdout.write('Comando runseed executado com sucesso!')
