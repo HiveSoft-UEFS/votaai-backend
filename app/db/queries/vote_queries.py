@@ -86,16 +86,14 @@ class VoteQueries:
                 question_id = row_question[0]
                 question_title = row_question[1]
 
-                cursor.execute("SELECT text, img FROM app_option WHERE question_id = %s", [question_id])
+                cursor.execute("SELECT text FROM app_option WHERE question_id = %s", [question_id])
                 options = []
                 rows_options = cursor.fetchall()
 
                 for row_option in rows_options:
                     option_text = row_option[0]
-                    option_img = row_option[1]
                     options.append({
-                        'text': option_text,
-                        'img': option_img,
+                        'text': option_text
                     })
 
                 questions.append({
@@ -115,6 +113,24 @@ class VoteQueries:
             }
 
             return response_data
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao buscar dados no PostgreSQL", error)
+        finally:
+            if cursor:
+                cursor.connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+
+
+    @staticmethod
+    def get_all():
+        cursor = create_connection().cursor()
+        if not cursor:
+            return
+
+        try:
+            cursor.execute("SELECT * FROM app_vote")
+            votes = cursor.fetchall()
+            return votes
         except (Exception, psycopg2.Error) as error:
             print("Erro ao buscar dados no PostgreSQL", error)
         finally:

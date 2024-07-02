@@ -10,6 +10,13 @@ class VoteViewSet(viewsets.ViewSet):
     _service = VoteService()
 
     # GET
+    def list(self, request):
+        votes = self._service.get_all_votes()
+        if votes['success']:
+            return Response(votes['data'], status=status.HTTP_200_OK)
+        return Response({'error': votes['error']}, status=status.HTTP_404_NOT_FOUND)
+
+    # GET
     def retrieve(self, request, pk=None):
         # Validação de parâmetros
         if pk is None:
@@ -17,13 +24,7 @@ class VoteViewSet(viewsets.ViewSet):
 
         # Recupera o voto
         vote = self._service.get_vote_by_hash(pk)
-        print(vote)
+        print(vote['data'])
         if vote['success']:
-            # Serializa os dados do voto
-            serializer = VoteSerializer(data=vote['data'])
-            if serializer.is_valid():
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({'error': vote['error']}, status=status.HTTP_404_NOT_FOUND)
+            return Response(vote['data'], status=status.HTTP_200_OK)
+        return Response({'error': vote['error']}, status=status.HTTP_404_NOT_FOUND)
