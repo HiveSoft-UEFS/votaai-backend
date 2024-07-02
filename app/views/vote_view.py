@@ -6,6 +6,7 @@ from app.serializers.vote_serializer import VoteSerializer
 
 
 class VoteViewSet(viewsets.ViewSet):
+
     _service = VoteService()
 
     # GET
@@ -15,7 +16,8 @@ class VoteViewSet(viewsets.ViewSet):
             return Response({'error': 'ID necessário'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Recupera o voto
-        vote = VoteQueries.getVote(pk)
+        vote = self._service.get_vote_by_hash(pk)
+        print(vote)
         if vote['success']:
             # Serializa os dados do voto
             serializer = VoteSerializer(data=vote['data'])

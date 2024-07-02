@@ -9,7 +9,7 @@ class UserViewSet(viewsets.ViewSet):
     # GET
     def list(self, request):
         # Aqui você pode implementar a lógica para lidar com solicitações GET
-        return Response({'message': 'Hello, world!'})
+        return Response({'message': 'Hello, world 3!'})
 
     # GEt
     def retrieve(self, request, pk=None):
