@@ -3,11 +3,20 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from app.serializers.user_serializer import UserSerializer
 from app.services.user_service import UserService
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import permission_classes
 
 
 class UserViewSet(viewsets.ViewSet):
-
+    permission_classes = [IsAuthenticated]
     _service = UserService()
+
+    def get_permissions(self):
+        if self.action == 'list':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
 
     # GET
     def list(self, request):
