@@ -12,7 +12,7 @@ class UserViewSet(viewsets.ViewSet):
     _service = UserService()
 
     def get_permissions(self):
-        if self.action == 'list':
+        if self.action in ['list', 'recover_password']:
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]
@@ -92,3 +92,15 @@ class UserViewSet(viewsets.ViewSet):
             return Response(user['data'], status=status.HTTP_200_OK)
 
         return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=False, methods=['post'], url_path='password')
+    def recover_password(self, request, *args, **kwargs):
+        email = request.data.get('email')
+
+        if email:
+            user = self._service.recover_password(email)
+            if user['success']:
+                return Response(user['data'], status=status.HTTP_200_OK)
+            return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': user['error']}, status=status.HTTP_400_BAD_REQUEST)
+

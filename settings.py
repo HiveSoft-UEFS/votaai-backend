@@ -144,3 +144,13 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',      
     ),
 }
+
+# settings.py
+
+EMAIL_BACKEND = 'anymail.backends.mailgun.EmailBackend'
+ANYMAIL = {
+    'MAILGUN_API_KEY': '913e803158c27333dd7cfd122be18eb5-623e10c8-0b313157',
+    'MAILGUN_SENDER_DOMAIN': 'sandbox2cfe3ff8cb0a4360a6bda7c93f8e4067.mailgun.org',
+}
+
+DEFAULT_FROM_EMAIL = 'postmaster@sandbox2cfe3ff8cb0a4360a6bda7c93f8e4067.mailgun.org'
