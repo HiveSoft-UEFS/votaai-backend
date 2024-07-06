@@ -3,11 +3,19 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from app.serializers.user_serializer import UserSerializer
 from app.services.user_service import UserService
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import permission_classes, action
 
 
 class UserViewSet(viewsets.ViewSet):
-
     _service = UserService()
+
+    def get_permissions(self):
+        if self.action in ['list', 'create']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
 
     # GET
     def list(self, request):
@@ -16,7 +24,7 @@ class UserViewSet(viewsets.ViewSet):
             return Response(users['data'], status=status.HTTP_200_OK)
         return Response({'error': users['error']}, status=status.HTTP_404_NOT_FOUND)
 
-    # GEt
+    # GET
     def retrieve(self, request, pk=None):
         # TODO: BUG - se tiver um ponto no pk ele da um erro
         if not pk:
@@ -73,3 +81,13 @@ class UserViewSet(viewsets.ViewSet):
     # DELETE
     def destroy(self, request, pk=None):
         return Response({'error': 'Not Implemented'})
+
+    @action(detail=False, methods=['get'], url_path='profile')
+    def get_user_to_profile(self, request):
+        user_id = request.user.id
+        user = self._service.get_user_by_id(user_id)
+
+        if user['success']:
+            return Response(user['data'], status=status.HTTP_200_OK)
+
+        return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)

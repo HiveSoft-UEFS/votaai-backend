@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from app.db.queries.vote_queries import VoteQueries
 from app.services.vote_service import VoteService
 from app.serializers.vote_serializer import VoteSerializer
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class VoteViewSet(viewsets.ViewSet):
-
+    permission_classes = [IsAuthenticated]
     _service = VoteService()
 
     # GET
@@ -17,6 +17,7 @@ class VoteViewSet(viewsets.ViewSet):
         return Response({'error': votes['error']}, status=status.HTTP_404_NOT_FOUND)
 
     # GET
+    
     def retrieve(self, request, pk=None):
         # Validação de parâmetros
         if pk is None:
