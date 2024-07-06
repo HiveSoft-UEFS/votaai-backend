@@ -4,7 +4,7 @@ from app.db.queries.vote_queries import VoteQueries
 from app.services.vote_service import VoteService
 from app.serializers.vote_serializer import VoteSerializer
 
-
+#Testando commit
 class VoteViewSet(viewsets.ViewSet):
 
     _service = VoteService()
