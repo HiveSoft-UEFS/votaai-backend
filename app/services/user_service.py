@@ -43,9 +43,9 @@ class UserService:
         try:
             data['role'] = 'USER'
             data['status'] = 'INACTIVE'
-            data['is_active'] = 'False'
-            data['is_staff'] = 'False'
-            data['is_admin'] = 'False'
+            data['is_active'] = 'True'
+            data['is_staff'] = 'True'
+            data['is_admin'] = 'True'
 
             user = UserQueries.insert(data)
             return {"success": True, "data": user}
