@@ -29,3 +29,19 @@ class VoteViewSet(viewsets.ViewSet):
         if vote['success']:
             return Response(vote['data'], status=status.HTTP_200_OK)
         return Response({'error': vote['error']}, status=status.HTTP_404_NOT_FOUND)
+
+
+    def create(self, request):
+
+        a = request.data.get('questions') 
+
+        print(a)
+
+        serializer = VoteSerializer(data=request.data)
+        if serializer.is_valid():
+            user = self._service.create_vote(serializer.data)
+            if user['success']:
+                return Response(user['data'], status=status.HTTP_201_CREATED)
+            return Response({'error': user['error']}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

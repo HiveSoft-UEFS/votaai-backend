@@ -18,7 +18,14 @@ class PollViewSet(viewsets.ViewSet):
 
     # GEt
     def retrieve(self, request, pk=None):
-        pass
+        if pk is None:
+            return Response({'error': 'ID necessário'}, status=status.HTTP_400_BAD_REQUEST)
+    
+        poll = self._service.get_Poll_By_Id(pk)
+        if poll['success']:
+            return Response(poll['data'], status=status.HTTP_200_OK)
+        return Response({'error': poll['error']}, status=status.HTTP_404_NOT_FOUND)
+        
 
     # POST
     def create(self, request):
