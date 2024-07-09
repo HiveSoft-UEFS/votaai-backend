@@ -15,3 +15,8 @@ def create_connection():
     except OperationalError as e:
         print(f"Erro ao conectar ao banco de dados: {e}")
         return None
+
+def close_connection(connection):
+    if connection:
+        connection.close()
+        print("Conexão com o PostgreSQL encerrada")
