@@ -12,7 +12,7 @@ from app.serializers.vote_serializer import VoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class VoteViewSet(viewsets.ViewSet):
-    ##permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     _service = VoteService()
 
     def get_permissions(self):
@@ -45,13 +45,13 @@ class VoteViewSet(viewsets.ViewSet):
     
     # POST
     def create(self, request):
- 
+        
         if request.method == 'POST':
-            #authorization_header = request.META['HTTP_AUTHORIZATION']
-            #token = authorization_header.split()[1] if authorization_header else None
-            
-            #payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-            #user_id = payload['user_id']
+            authorization_header = request.META['HTTP_AUTHORIZATION']
+            token = authorization_header.split()[1] if authorization_header else None
+                        
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['user_id']
 
 
             data = json.loads(request.body)
@@ -67,6 +67,7 @@ class VoteViewSet(viewsets.ViewSet):
            
             options = []
             for i in data:
+                pollId = i
                 for j in data[i]:
                     for y in data[i][j]:
                         options.append(y)
@@ -89,6 +90,10 @@ class VoteViewSet(viewsets.ViewSet):
                 hash_hex = hash_obj.hexdigest()
 
             vote = self._service.updateHash(hash_hex,vote['id'])
+
+
+            participation = self._service.participation(user_id,pollId)
+            print(participation)
 
 
                 

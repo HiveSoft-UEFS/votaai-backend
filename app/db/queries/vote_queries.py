@@ -234,3 +234,28 @@ class VoteQueries:
             if connection:
                 connection.close()
                 print("Conexão com o PostgreSQL encerrada")
+
+
+
+    def createParticipation(user,poll):
+        try:
+            connection = create_connection()
+            cursor =connection.cursor()
+            if not cursor:
+                return
+            querry = "INSERT INTO app_participation (user_id, poll_id) VALUES (%s, %s) RETURNING *;"
+            cursor.execute(querry,(user,poll))
+            connection.commit()
+            column_names = [desc[0] for desc in cursor.description]
+            participation = cursor.fetchone()
+            if participation:
+                return dict(zip(column_names, participation))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao inserir dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")

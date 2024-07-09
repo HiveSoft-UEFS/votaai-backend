@@ -59,3 +59,12 @@ class VoteService:
             return {"success": False, "error": str(e)}
         
 
+    def participation(self,user, poll):
+        try:
+            participation = VoteQueries.createParticipation(user,poll)
+            return {"success": True, "data": participation}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+        
+
