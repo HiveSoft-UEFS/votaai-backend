@@ -21,11 +21,28 @@ class PollViewSet(viewsets.ViewSet):
         if pk is None:
             return Response({'error': 'ID necessário'}, status=status.HTTP_400_BAD_REQUEST)
     
-        poll = self._service.get_Poll_By_Id(pk)
+        poll = self._service.get_poll_by_id(pk)
         if poll['success']:
             return Response(poll['data'], status=status.HTTP_200_OK)
         return Response({'error': poll['error']}, status=status.HTTP_404_NOT_FOUND)
         
+    def search(self, request):
+        order = request.GET.get('order')
+        category = request.GET.get('category')
+        value = request.GET.get('value')
+        if value is None: value = ''
+        if order == '' or order is None: order = 'new'
+        if category == '' or category is None: category = 'all'
+        if request.GET.get('tag') == 'true':
+            poll = self._service.get_poll_by_tag(order, category, value)
+        elif request.GET.get('code') == 'true':
+            poll = self._service.get_poll_by_code(value)
+        else:
+            poll = self._service.get_poll_by_title(order, category, value)
+        if poll['success']:
+            return Response(poll['data'], status=status.HTTP_200_OK)
+        return Response({'error': poll['error']}, status=status.HTTP_404_NOT_FOUND)
+
 
     # POST
     def create(self, request):
