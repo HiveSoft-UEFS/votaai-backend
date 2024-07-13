@@ -86,33 +86,17 @@ class UserQueries:
             cursor = connection.cursor()
             query = """
                 UPDATE app_user 
-                SET cpf = %s, 
+                SET
                     email = %s, 
-                    name = %s, 
-                    lname = %s, 
-                    username = %s, 
-                    status = %s, 
-                    role = %s, 
-                    password = %s, 
-                    is_active = %s, 
-                    is_staff = %s, 
-                    is_admin = %s 
+                    username = %s    
                 WHERE id = %s 
                 RETURNING *;
             """
 
             cursor.execute(query, (
-                data['cpf'],
+                
                 data['email'],
-                data['name'],
-                data['lname'],
-                data['username'],
-                data['status'],
-                data['role'],
-                data['password'],
-                data['is_active'],
-                data['is_staff'],
-                data['is_admin'],
+                data['username'],      
                 user['id']
             ))
 
@@ -131,3 +115,4 @@ class UserQueries:
             if connection:
                 connection.close()
                 print("Conexão com o PostgreSQL encerrada")
+
