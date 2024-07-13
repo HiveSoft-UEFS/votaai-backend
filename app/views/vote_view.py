@@ -95,9 +95,4 @@ class VoteViewSet(viewsets.ViewSet):
             participation = self._service.participation(user_id,pollId)
             print(participation)
 
-
-                
-
-
-
         return Response (vote)
