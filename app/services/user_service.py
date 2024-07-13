@@ -59,3 +59,11 @@ class UserService:
             return {"success": True, "data": user}
         except Exception as e:
             return {"success": False, "error": str(e)}
+
+
+    def get_poll_user(self, user):
+        try:
+            polls = UserQueries.get_poll(user)
+            return {"success": True, "data": polls}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
