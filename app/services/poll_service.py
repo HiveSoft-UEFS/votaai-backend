@@ -27,6 +27,8 @@ class PollService:
                 poll = PollQueries.get_where('title','criation_date','ASC', category, title)
             elif order == 'new':
                 poll = PollQueries.get_where('title','criation_date','DESC', category,title)
+            elif order == 'pop':
+                poll = PollQueries.get_where('title','','pop', category,title)
             return {"success": True, "data": poll}
         except Exception as e:
             return {"success": False, "error": str(e)}
@@ -37,6 +39,8 @@ class PollService:
                 poll = PollQueries.get_where('tags', 'criation_date','ASC', category, tag)
             elif order == 'new':
                 poll = PollQueries.get_where('tags', 'criation_date','DESC', category, tag)
+            elif order == 'pop':
+                poll = PollQueries.get_where('tags','','pop', category, tag)
             return {"success": True, "data": poll}
         except Exception as e:
             return {"success": False, "error": str(e)}
