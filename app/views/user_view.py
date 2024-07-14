@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from app.serializers.user_serializer import UserSerializer
 from app.services.user_service import UserService
+from app.services.email_service import EmailService
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes, action
 
@@ -91,3 +92,39 @@ class UserViewSet(viewsets.ViewSet):
             return Response(user['data'], status=status.HTTP_200_OK)
 
         return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ForgotPasswordView(viewsets.ViewSet):
+
+    def forgot_password(self, request, email):
+        _user_service = UserService()
+        _email_service = EmailService()
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Missing parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = _user_service.get_user_by_email(email)['data']
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        _email_service.send_forgot_password_email(user[0])
+        return Response({'success': 'Email sent'}, status=status.HTTP_200_OK)
+
+    def change_password(self, request):
+        _user_service = UserService()
+        new_password = request.data.get('new_password')
+        recovery_code = request.data.get('recovery_code')
+
+        if not new_password or not recovery_code:
+            return Response({'error': 'Missing parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = _user_service.get_by_recovery_token(recovery_code)
+        if not user['success']:
+            return Response({'error': 'Invalid recovery code'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = _user_service.partial_update_user(user["data"][0], {'password': new_password})
+
+        if user['success']:
+            return Response(user['data'], status=status.HTTP_200_OK)
+
+        return Response({'error': user['error']}, status=status.HTTP_400_BAD_REQUEST)

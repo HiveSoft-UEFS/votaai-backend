@@ -131,3 +131,48 @@ class UserQueries:
             if connection:
                 connection.close()
                 print("Conexão com o PostgreSQL encerrada")
+
+    @staticmethod
+    def partial_update(user, data):
+        connection = None
+        try:
+            connection = create_connection()
+            cursor = connection.cursor()
+
+            # Step 1: Initialize the lists
+            set_clauses = []
+            values = []
+
+            # Step 2: Construct the SET clause and values list
+            for key, value in data.items():
+                set_clauses.append(f"{key} = %s")
+                values.append(value)
+
+            # Step 3: Join the SET clauses
+            set_clause = ", ".join(set_clauses)
+
+            # Step 4: Construct the final query
+            query = f"""
+                UPDATE app_user
+                SET {set_clause}
+                WHERE id = %s
+                RETURNING *;
+            """
+
+            # Execute the query with the values and the user's id
+            cursor.execute(query, values + [user['id']])
+            connection.commit()
+
+            column_names = [desc[0] for desc in cursor.description]
+            user_data = cursor.fetchone()
+            if user_data:
+                return dict(zip(column_names, user_data))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao atualizar dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
