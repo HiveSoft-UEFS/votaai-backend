@@ -118,3 +118,59 @@ class PollQueries:
             print("Erro ao buscar dados no PostgreSQL", error)
         finally:
             close_connection(connection)
+
+    def get_user_polls(user_id):
+        connection = create_connection()
+        if not connection:
+            return
+
+        try:
+            cursor = connection.cursor()
+
+            # Consultando votações criadas pelo usuário
+            query_created = """
+                SELECT id, status, criation_date, title
+                FROM app_poll 
+                WHERE creator_id = %s;
+            """
+            cursor.execute(query_created, (user_id,))
+            created_polls = cursor.fetchall()
+
+            # Consultando votações participadas pelo usuário
+            query_participated = """
+                SELECT poll.id, poll.status, poll.criation_date, poll.title 
+                FROM app_poll poll
+                JOIN app_participation participation ON poll.id = participation.poll_id
+                WHERE participation.user_id = %s;
+            """
+            cursor.execute(query_participated, (user_id,))
+            participated_polls = cursor.fetchall()
+
+            polls = []
+
+            # Adicionando as votações criadas ao resultado
+            for poll in created_polls:
+                polls.append({
+                    "status": poll[1],
+                    "data_criacao": poll[2],
+                    "titulo": poll[3],
+                    "tipo": "criada"
+                })
+
+            # Adicionando as votações participadas ao resultado
+            for poll in participated_polls:
+                polls.append({
+                    "status": poll[1],
+                    "data_criacao": poll[2],
+                    "titulo": poll[3],
+                    "tipo": "participada"
+                })
+
+            return {"polls": polls}
+
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao buscar dados no PostgreSQL", error)
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
