@@ -47,3 +47,10 @@ class PollService:
             return {"success": True, "data": poll}
         except Exception as e:
             return {"success": False, "error": str(e)}
+        
+    def get_history_by_id(self, user_id):
+        try:
+            history = PollQueries.get_user_polls(user_id)
+            return {"success": True, "data": history}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
