@@ -3,6 +3,12 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from app.serializers.user_serializer import UserSerializer
 from app.services.poll_service import PollService
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+import jwt
+from django.conf import settings
+
+
 
 
 class PollViewSet(viewsets.ViewSet):
@@ -42,8 +48,29 @@ class PollViewSet(viewsets.ViewSet):
         if poll['success']:
             return Response(poll['data'], status=status.HTTP_200_OK)
         return Response({'error': poll['error']}, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=False, methods=['get'], url_path='history', permission_classes=[IsAuthenticated])
+    def get_history(self, request):
+        authorization_header = request.META.get('HTTP_AUTHORIZATION')
+        if not authorization_header:
+            return Response({"detail": "Authorization header is missing"}, status=400)
 
+        token = authorization_header.split()[1]
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['user_id']
+        except jwt.ExpiredSignatureError:
+            return Response({"detail": "Token has expired"}, status=401)
+        except jwt.InvalidTokenError:
+            return Response({"detail": "Invalid token"}, status=401)
 
+        poll_service = PollService()
+        poll_history = poll_service.get_history_by_id(user_id)
+
+        if not poll_history['success']:
+            return Response({"detail": poll_history['error']['message']}, status=500)
+
+        return Response(poll_history['data'])
     # POST
     def create(self, request):
         pass
