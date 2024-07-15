@@ -184,3 +184,38 @@ class PollQueries:
             if connection:
                 connection.close()
                 print("Conexão com o PostgreSQL encerrada")
+
+    def get_poll_counts_by_user(user_id):
+        connection = create_connection()
+        if not connection:
+            return {'criadas': 0, 'participadas': 0}
+        
+        try:
+            cursor = connection.cursor()
+            
+            # Contar polls criadas pelo usuário
+            query_created = """
+            SELECT COUNT(*) FROM app_poll WHERE creator_id = %s;
+            """
+            cursor.execute(query_created, [str(user_id)])
+            created_count = cursor.fetchone()[0]
+            
+            # Contar polls participadas pelo usuário
+            query_participated = """
+            SELECT COUNT(*) FROM app_participation WHERE user_id = %s;
+            """
+            cursor.execute(query_participated, [str(user_id)])
+            participated_count = cursor.fetchone()[0]
+            
+            return {
+                'criadas': created_count,
+                'participadas': participated_count
+            }
+            
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao buscar dados no PostgreSQL", error)
+            return {'criadas': 0, 'participadas': 0}
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")

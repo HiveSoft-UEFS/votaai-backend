@@ -10,3 +10,11 @@ class UserSerializer(UniqueFieldsMixin, serializers.ModelSerializer):
             'email': {'required': False},
             'username': {'required': False},
         }
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        # Aqui você pode adicionar outras validações, como complexidade da senha
+        return attrs
