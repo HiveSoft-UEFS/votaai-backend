@@ -62,6 +62,7 @@ class PollQueries:
                 print("Conexão com o PostgreSQL encerrada")
 
     def get_where(type, filter, order, category, value):
+        query = ''
         if type == 'code':
             query = (
                 "SELECT * FROM app_poll "
@@ -72,24 +73,33 @@ class PollQueries:
             param = [str(value)]
         elif (type == 'title' or type == 'tags') and category == 'all':
             query = (
-                "SELECT * FROM app_poll " 
-                "WHERE " + type + " LIKE %s "
-                "AND (privacy = 'Public' OR privacy = 'PUBLIC') " 
-                "AND (status = 'Open' OR status = 'OPEN') " 
-                "ORDER BY " + filter + ' ' + order
+                "SELECT p.* FROM app_poll AS p " 
+                "WHERE p." + type + " LIKE %s "
+                "AND (p.privacy = 'Public' OR p.privacy = 'PUBLIC') " 
+                "AND (p.status = 'Open' OR p.status = 'OPEN') " 
             )
             param = ['%' + value + '%']
         elif (type == 'title' or type == 'tags') and category != 'all':
             query = (
-                "SELECT * FROM app_poll " 
-                "WHERE " + type + " LIKE %s " 
-                "AND (privacy = 'Public' OR privacy = 'PUBLIC') " 
-                "AND (status = 'Open' OR status = 'OPEN') " 
-                "AND CATEGORY LIKE %s " 
-                "ORDER BY " + filter + ' ' + order
+                "SELECT p.* FROM app_poll AS p " 
+                "WHERE p." + type + " LIKE %s " 
+                "AND (p.privacy = 'Public' OR p.privacy = 'PUBLIC') " 
+                "AND (p.status = 'Open' OR p.status = 'OPEN') " 
+                "AND p.category LIKE %s " 
             )
             print(query)
             param = ['%' + value + '%','%' + category + '%']
+        if(type != 'code' and (order == 'ASC' or order == 'DESC')):
+            query = query+("ORDER BY p." + filter + ' ' + order)
+        elif(type != 'code' and order == 'pop'):
+            query = query.replace(
+                "SELECT p.* FROM app_poll AS p ", (
+                    "SELECT p.*, COUNT(DISTINCT u.id) AS user_count FROM app_poll p "
+                    "LEFT JOIN app_participation AS par ON p.id = par.poll_id "
+                    "LEFT JOIN app_user AS u ON par.user_id = u.id "
+                )
+            )
+            query = query+("GROUP BY p.id ORDER BY user_count DESC")
         connection = create_connection()
         if not connection:
             return 
