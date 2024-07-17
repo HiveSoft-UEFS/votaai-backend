@@ -31,7 +31,30 @@ class PollViewSet(viewsets.ViewSet):
         if poll['success']:
             return Response(poll['data'], status=status.HTTP_200_OK)
         return Response({'error': poll['error']}, status=status.HTTP_404_NOT_FOUND)
-        
+    
+    @action(detail=False, methods=['get'], url_path='participation', permission_classes=[IsAuthenticated])
+    def get_participation(self, request):
+        authorization_header = request.META.get('HTTP_AUTHORIZATION')
+        if not authorization_header:
+            return Response({"detail": "Authorization header is missing"}, status=400)
+
+        token = authorization_header.split()[1]
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['user_id']
+        except jwt.ExpiredSignatureError:
+            return Response({"detail": "Token has expired"}, status=401)
+        except jwt.InvalidTokenError:
+            return Response({"detail": "Invalid token"}, status=401)
+
+        poll_counts = self._service.get_poll_counts_by_user(user_id)
+
+        if poll_counts['success']:
+            return Response(poll_counts['data'], status=status.HTTP_200_OK)
+
+        return Response({'error': poll_counts['error']}, status=status.HTTP_404_NOT_FOUND)
+    
+    
     def search(self, request):
         order = request.GET.get('order')
         category = request.GET.get('category')

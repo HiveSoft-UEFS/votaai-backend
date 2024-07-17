@@ -58,3 +58,10 @@ class PollService:
             return {"success": True, "data": history}
         except Exception as e:
             return {"success": False, "error": str(e)}
+        
+    def get_poll_counts_by_user(self, user_id):
+        try:
+            counts = PollQueries.get_poll_counts_by_user(user_id)
+            return {"success": True, "data": counts}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
