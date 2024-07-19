@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/forgotpassword/', user_view.ForgotPasswordView.as_view({'get': 'forgot_password', "post": "change_password"}), name='forgot_password'),
+    path('polls/search/s', poll_view.PollViewSet.as_view({'get': 'search'}), name='poll-search'),
 ]

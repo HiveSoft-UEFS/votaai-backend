@@ -1,11 +1,16 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import viewsets
-from app.serializers.user_serializer import UserSerializer
+from app.serializers.user_serializer import UserSerializer, ChangePasswordSerializer
 from app.services.user_service import UserService
 from app.services.email_service import EmailService
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.decorators import permission_classes, action
+from rest_framework.decorators import action
+from django.contrib.auth.models import User
+
+
+#from app.serializers.ChangePasswordSerializer import ChangePasswordSerializer
+
 
 
 class UserViewSet(viewsets.ViewSet):
@@ -27,7 +32,6 @@ class UserViewSet(viewsets.ViewSet):
 
     # GET
     def retrieve(self, request, pk=None):
-        # TODO: BUG - se tiver um ponto no pk ele da um erro
         if not pk:
             return Response({'error': 'Missing parameter'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -36,7 +40,6 @@ class UserViewSet(viewsets.ViewSet):
                 user = self._service.get_user_by_cpf(pk)
             else:
                 user = self._service.get_user_by_id(pk)
-
         else:
             if '@' in str(pk):
                 user = self._service.get_user_by_email(pk)
@@ -74,23 +77,37 @@ class UserViewSet(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
-
+    
     # PATCH
     def partial_update(self, request, pk=None):
-        return Response({'error': 'Not Implemented'})
+        if not pk:
+            return Response({'error': 'Missing parameter'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = self._service.get_user_by_id(pk)
+        if user['success']:
+            serializer = UserSerializer(user['data'], data=request.data, partial=True)
+            if serializer.is_valid():
+                updated_user = self._service.update_user(user['data'], serializer.validated_data)
+                if updated_user['success']:
+                    return Response(updated_user['data'], status=status.HTTP_200_OK)
+                return Response({'error': updated_user['error']}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
 
     # DELETE
     def destroy(self, request, pk=None):
         return Response({'error': 'Not Implemented'})
 
-    @action(detail=False, methods=['get'], url_path='profile')
-    def get_user_to_profile(self, request):
-        user_id = request.user.id
+    @action(detail=False, methods=['get', 'patch'], url_path='profile', permission_classes=[IsAuthenticated])
+    def user_profile(self, request):
+        user_id = request.user.id  # Usa o ID do usuário autenticado
         user = self._service.get_user_by_id(user_id)
 
-        if user['success']:
-            return Response(user['data'], status=status.HTTP_200_OK)
-
+        if request.method == 'GET':
+            if user['success']:
+                return Response(user['data'], status=status.HTTP_200_OK)
+            return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
         return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)
 
 
@@ -128,3 +145,33 @@ class ForgotPasswordView(viewsets.ViewSet):
             return Response(user['data'], status=status.HTTP_200_OK)
 
         return Response({'error': user['error']}, status=status.HTTP_400_BAD_REQUEST)
+      
+      
+        if request.method == 'PATCH':
+            if user['success']:
+                user_instance = user['data']
+                
+                if not isinstance(user_instance, User):
+                    return Response({'error': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+                # Atualizar senha se os dados forem fornecidos
+                if 'current_password' in request.data and 'new_password' in request.data:
+                    current_password = request.data['current_password']
+                    new_password = request.data['new_password']
+
+                    if user_instance.check_password(current_password):
+                        user_instance.set_password(new_password)
+                        user_instance.save()
+                        return Response({'message': 'Senha atualizada com sucesso.'}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({'error': 'Senha atual incorreta.'}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Atualizar email e username
+                serializer = UserSerializer(user_instance, data=request.data, partial=True)
+                if serializer.is_valid():
+                    updated_user = self._service.update_user(user_instance, serializer.validated_data)
+                    if updated_user['success']:
+                        return Response(updated_user['data'], status=status.HTTP_200_OK)
+                    return Response({'error': updated_user['error']}, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response({'error': user['error']}, status=status.HTTP_404_NOT_FOUND)

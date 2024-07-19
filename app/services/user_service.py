@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 
 from app.db.queries.recovery_token_queries import RecoveryTokenQueries
 from app.db.queries.user_queries import UserQueries
+from app.db.queries.poll_queries import PollQueries
+from app.models import User
 
 
 class UserService:
@@ -84,3 +86,34 @@ class UserService:
             return {"success": True, "data": user}
         except Exception as e:
             return {"success": False, "error": str(e)}
+
+    def get_poll_user(self, user):
+        try:
+            polls = UserQueries.get_poll(user)
+            return {"success": True, "data": polls}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+        
+    def get_polls_by_creator_id(self, creator_id):
+        try:
+            polls = PollQueries.get_by_creator_id(creator_id)
+            total_polls = len(polls)
+            return {"success": True, "total_polls": total_polls, "data": polls}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+        
+    
+    def password_update(self, user_data, request_data):
+        current_password = request_data['current_password']
+        new_password = request_data['new_password']
+        
+        # Lógica para verificar a senha atual e atualizar para a nova senha
+        user = User.objects.get(id=user_data['id'])  # Exemplo: busque o usuário por ID
+        
+        if not user.check_password(current_password):
+            return {'success': False, 'error': 'Senha atual incorreta'}
+        
+        user.set_password(new_password)  # Atualiza a senha
+        user.save()  # Salva as alterações
+
+        return {'success': True, 'data': 'Senha atualizada com sucesso'}
