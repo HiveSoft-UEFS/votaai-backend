@@ -1,3 +1,7 @@
+from datetime import datetime
+from datetime import datetime, timezone
+
+from app.db.queries.recovery_token_queries import RecoveryTokenQueries
 from app.db.queries.user_queries import UserQueries
 from app.db.queries.poll_queries import PollQueries
 from app.models import User
@@ -62,6 +66,26 @@ class UserService:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+    def partial_update_user(self, user, data):
+        try:
+            user = UserQueries.partial_update(user, data)
+            return {"success": True, "data": user}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def get_by_recovery_token(self, token):
+        try:
+            token = RecoveryTokenQueries.get_by_token(token)
+
+            expiration_date = token[3]
+            if expiration_date < datetime.now(timezone.utc):
+                return {"success": False, "error": "Token expired"}
+
+            user_id = token[-1]
+            user = UserQueries.get_where('id', user_id)
+            return {"success": True, "data": user}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
 
     def get_poll_user(self, user):
         try:

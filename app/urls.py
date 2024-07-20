@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -18,5 +18,6 @@ urlpatterns = [
     path('api/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/forgotpassword/', user_view.ForgotPasswordView.as_view({'get': 'forgot_password', "post": "change_password"}), name='forgot_password'),
     path('polls/search/s', poll_view.PollViewSet.as_view({'get': 'search'}), name='poll-search'),
 ]
