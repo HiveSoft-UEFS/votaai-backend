@@ -104,6 +104,14 @@ class UserService:
         
     
     def password_update(self, user_data, request_data):
+
+        try:
+            user = UserQueries.password_update(user_data, request_data) 
+            return {"success": True, "request_data": user}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+        
+        
         current_password = request_data['current_password']
         new_password = request_data['new_password']
         
