@@ -15,7 +15,7 @@ class VoteQueries:
             cursor.execute("SELECT id FROM app_vote WHERE hash = %s", [hash])
             row_vote = cursor.fetchone()
             if not row_vote:
-                return None
+                raise Exception('Voto não encontrado.')
 
             vote_id = row_vote[0]
 
@@ -23,7 +23,7 @@ class VoteQueries:
             cursor.execute("SELECT id FROM app_choice WHERE vote_id = %s", [vote_id])
             row_choice = cursor.fetchone()
             if not row_choice:
-                return None
+                raise Exception('Escolha não encontrada.')
 
             choice_id = row_choice[0]
 
@@ -32,7 +32,7 @@ class VoteQueries:
             row_option = cursor.fetchone()
 
             if not row_option:
-                return None
+                raise Exception('Opcao não encontrada.')
 
             option_id = row_option[0]
 
@@ -41,7 +41,7 @@ class VoteQueries:
             row_question = cursor.fetchone()
 
             if not row_question:
-                return None
+                raise Exception('Questao não encontrada.')
 
             question_id = row_question[0]
 
@@ -49,7 +49,7 @@ class VoteQueries:
             row_poll = cursor.fetchone()
 
             if not row_poll:
-                return None
+              raise Exception('Enquete não encontrada.')
 
             poll_id = row_poll[0]
 
@@ -57,7 +57,7 @@ class VoteQueries:
             row_creator = cursor.fetchone()
 
             if not row_creator:
-                return None
+                raise Exception('Croador não encontrado.')
 
             creator_id = row_creator[0]
             cursor.execute("SELECT username FROM app_user WHERE id = %s", [creator_id])
@@ -68,7 +68,7 @@ class VoteQueries:
             poll_details = cursor.fetchone()
 
             if not poll_details:
-                return None
+                raise Exception('Detalhes da enquente não encontrado.')
 
             creation_date = poll_details[0]
             finish_date = poll_details[1]
@@ -113,6 +113,7 @@ class VoteQueries:
             return response_data
         except (Exception, psycopg2.Error) as error:
             print("Erro ao buscar dados no PostgreSQL", error)
+            raise Exception(error)
         finally:
             if cursor:
                 cursor.connection.close()
