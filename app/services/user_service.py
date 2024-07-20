@@ -107,7 +107,7 @@ class UserService:
 
         try:
             user = UserQueries.password_update(user_data, request_data) 
-            return {"success": True, "request_data": user}
+            return {"success": True, "data": user}
         except Exception as e:
             return {"success": False, "error": str(e)}
         

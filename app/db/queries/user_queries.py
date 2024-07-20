@@ -120,18 +120,12 @@ class UserQueries:
 
     @staticmethod
     def password_update(user, data):
-        print('Entrou em mudar senha')
-        current_password = data.get('current_password')
-        new_password = data.get('new_password')
-        confirm_password = data.get('confirm_password')
+        print(user['data']['id'])
+        current_password = data['current_password']
+        new_password = data['new_password']
+        print(current_password)
+        print(new_password)
 
-        # Verificar se todas as senhas foram fornecidas
-        if not current_password or not new_password or not confirm_password:
-            return {'success': False, 'error': 'Todas as senhas devem ser fornecidas.'}
-
-        # Verificar se a nova senha e a confirmação da nova senha coincidem
-        if new_password != confirm_password:
-            return {'success': False, 'error': 'A nova senha e a confirmação da nova senha não coincidem.'}
 
         connection = None
         try:
@@ -140,25 +134,26 @@ class UserQueries:
 
             # Buscar a senha atual do usuário no banco de dados
             query = "SELECT password FROM app_user WHERE id = %s;"
-            cursor.execute(query, (user['id'],))
+            cursor.execute(query, (user['data']['id'],))
             stored_password = cursor.fetchone()[0]
+            print(stored_password, current_password)
 
             # Verificar se a senha atual está correta
-            if not check_password_hash(stored_password, current_password):
-                return {'success': False, 'error': 'A senha atual está incorreta.'}
+            if not stored_password == current_password:                
+                raise Exception('A senha atual está incorreta.')
 
-            # Atualizar para a nova senha
-            hashed_new_password = generate_password_hash(new_password)
+            
+       
             update_query = """
                 UPDATE app_user 
                 SET password = %s
                 WHERE id = %s 
                 RETURNING *;
             """
-
+            
             cursor.execute(update_query, (
-                hashed_new_password,
-                user['id']
+                new_password,
+                user['data']['id']
             ))
 
             connection.commit()
@@ -166,12 +161,12 @@ class UserQueries:
             column_names = [desc[0] for desc in cursor.description]
             user_data = cursor.fetchone()
             if user_data:
-                return {'success': True, 'data': dict(zip(column_names, user_data))}
+                return  dict(zip(column_names, user_data))
             else:
-                return {'success': False, 'error': 'Erro ao atualizar a senha.'}
+                raise Exception( 'Erro ao atualizar a senha.')
         except (Exception, psycopg2.Error) as error:
             print("Erro ao atualizar a senha no PostgreSQL:", error)
-            return {'success': False, 'error': 'Erro ao atualizar a senha no banco de dados.'}
+            raise Exception('Erro ao atualizar a senha no banco de dados.')
         finally:
             if connection:
                 connection.close()
