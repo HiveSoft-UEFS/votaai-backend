@@ -81,6 +81,7 @@ class UserQueries:
     @staticmethod
     def update(user, data):
         print(data)
+        print("entrou em alterar email")
         connection = None
         try:
             connection = create_connection()
@@ -119,6 +120,7 @@ class UserQueries:
 
     @staticmethod
     def password_update(user, data):
+        print('Entrou em mudar senha')
         current_password = data.get('current_password')
         new_password = data.get('new_password')
         confirm_password = data.get('confirm_password')
