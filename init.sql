@@ -7,12 +7,12 @@ INSERT INTO app_user (cpf, email, name, lname, username, status, role, password,
 ('12345678905', 'admin@example.com', 'Admin', 'Silva', 'admin', 'ACTIVE', 'USER', 'admin', TRUE, FALSE, FALSE);
 
 -- Inserir dados na tabela Poll
-INSERT INTO app_poll (criation_date, finish_date, status, title, description, privacy, creator_id) VALUES
-('2024-07-01', '2024-07-31', 'OPEN', 'Melhor livro', 'Escolha o melhor livro', 'PUBLIC', 1),
-('2024-07-01', '2024-07-20', 'CLOSED', 'Melhor feriado do ano', 'Escolha o melhor feriado do ano', 'PUBLIC', 1),
-('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor cantor', 'Escolha o melhor cantor', 'RESTRICTED', 2),
-('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor anime', 'Escolha o melhor anime', 'RESTRICTED', 5),
-('2024-07-05', '2024-07-20', 'OPEN', 'Melhor mangá', 'Escolha o melhor mangá', 'PUBLIC', 5);
+INSERT INTO app_poll (criation_date, finish_date, status, title, description, privacy, creator_id, category, tags) VALUES
+('2024-07-01', '2024-07-31', 'OPEN', 'Melhor livro', 'Escolha o melhor livro', 'PUBLIC', 1, 'CULTURE', 'livro'),
+('2024-07-01', '2024-07-20', 'CLOSED', 'Melhor feriado do ano', 'Escolha o melhor feriado do ano', 'PUBLIC', 1, 'RANDOM', 'feriado'),
+('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor cantor', 'Escolha o melhor cantor', 'RESTRICTED', 2, 'RANDOM', 'musica'),
+('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor anime', 'Escolha o melhor anime', 'RESTRICTED', 5, 'ANIMATION', 'anime'),
+('2024-07-05', '2024-07-20', 'OPEN', 'Melhor mangá', 'Escolha o melhor mangá', 'PUBLIC', 5, 'CULTURE', 'manga');
 
 -- Inserir dados na tabela Participation
 INSERT INTO app_participation (user_id, poll_id) VALUES

@@ -1,7 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import viewsets
-from app.serializers.user_serializer import UserSerializer, ChangePasswordSerializer
+from app.serializers.user_serializer import UserSerializer
+from app.serializers.full_user_serializer import FullUserSerializer
 from app.services.user_service import UserService
 from app.services.email_service import EmailService
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -53,7 +54,8 @@ class UserViewSet(viewsets.ViewSet):
 
     # POST
     def create(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = FullUserSerializer(data=request.data)
+        
         if serializer.is_valid():
             user = self._service.create_user(serializer.data)
             if user['success']:
