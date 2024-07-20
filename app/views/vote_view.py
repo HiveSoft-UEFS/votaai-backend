@@ -40,6 +40,7 @@ class VoteViewSet(viewsets.ViewSet):
         vote = self._service.get_vote_by_hash(pk)
       
         if vote['success']:
+            print(vote)
             return Response(vote['data'], status=status.HTTP_200_OK)
         return Response({'error': vote['error']}, status=status.HTTP_404_NOT_FOUND)
     
