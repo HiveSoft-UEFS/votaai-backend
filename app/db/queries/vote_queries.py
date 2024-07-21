@@ -21,24 +21,22 @@ class VoteQueries:
 
 
             cursor.execute("SELECT id FROM app_choice WHERE vote_id = %s", [vote_id])
-            row_choice = cursor.fetchone()
+            row_choice = cursor.fetchall()
             if not row_choice:
                 raise Exception('Escolha não encontrada.')
 
-            choice_id = row_choice[0]
+            choice_ids = [row[0] for row in row_choice]           
 
-
-            cursor.execute("SELECT option_id FROM app_choice WHERE id = %s", [choice_id])
-            row_option = cursor.fetchone()
+            cursor.execute("SELECT option_id FROM app_choice WHERE id IN %s", [tuple(choice_ids)])
+            row_option = cursor.fetchall()
 
             if not row_option:
                 raise Exception('Opcao não encontrada.')
 
-            option_id = row_option[0]
+            option_ids = [row[0] for row in row_option]
 
-
-            cursor.execute("SELECT question_id FROM app_option WHERE id = %s", [option_id])
-            row_question = cursor.fetchone()
+            cursor.execute("SELECT DISTINCT question_id FROM app_option WHERE id IN %s", [tuple(option_ids)])
+            row_question = cursor.fetchall()
 
             if not row_question:
                 raise Exception('Questao não encontrada.')
@@ -57,7 +55,7 @@ class VoteQueries:
             row_creator = cursor.fetchone()
 
             if not row_creator:
-                raise Exception('Croador não encontrado.')
+                raise Exception('Criador não encontrado.')
 
             creator_id = row_creator[0]
             cursor.execute("SELECT username FROM app_user WHERE id = %s", [creator_id])
@@ -84,12 +82,14 @@ class VoteQueries:
                 question_id = row_question[0]
                 question_title = row_question[1]
 
-                cursor.execute("SELECT text FROM app_option WHERE question_id = %s", [question_id])
-                options = []
+                cursor.execute("SELECT id, text FROM app_option WHERE question_id = %s AND id IN %s", [question_id, tuple(option_ids)])
                 rows_options = cursor.fetchall()
+                print(option_ids)
+                options = []
+               
 
                 for row_option in rows_options:
-                    option_text = row_option[0]
+                    option_text = row_option[1]
                     options.append({
                         'text': option_text
                     })

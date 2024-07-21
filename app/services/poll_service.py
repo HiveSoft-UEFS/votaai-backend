@@ -1,5 +1,5 @@
 from app.db.queries.poll_queries import PollQueries
-
+from app.serializers.poll_serializers import PollSerializer
 
 class PollService:
 
@@ -10,6 +10,13 @@ class PollService:
         except Exception as e:
             return {"success": False, "error": str(e)}
         
+    def create_poll(self, validated_data):
+        try:
+            poll = PollSerializer().create(validated_data)
+            return {'success': True, 'data': poll}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
 
     def get_poll_by_id(self,id):
 
