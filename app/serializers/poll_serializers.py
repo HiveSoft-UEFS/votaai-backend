@@ -5,10 +5,8 @@ class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = ['text', 'img']
-        print("Entrou options")
 
 class QuestionFieldSerializer(serializers.ModelSerializer):
-    print("Entrou question Serializer")
     options = OptionSerializer(many=True)
 
 
@@ -17,7 +15,6 @@ class QuestionFieldSerializer(serializers.ModelSerializer):
         fields = ['title', 'max_qtd_choices', 'options']
 
 class PollSerializer(serializers.ModelSerializer):
-    print("Entrou serializer!")
     questions = QuestionFieldSerializer(many=True)
 
     class Meta:
