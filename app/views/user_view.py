@@ -144,7 +144,7 @@ class UserViewSet(viewsets.ViewSet):
 
 class ForgotPasswordView(viewsets.ViewSet):
 
-    def forgot_password(self, request, email):
+    def forgot_password(self, request):
         _user_service = UserService()
         _email_service = EmailService()
         email = request.data.get('email')
