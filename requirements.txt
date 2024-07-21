@@ -4,4 +4,5 @@ django-cors-headers
 factory-boy
 drf-writable-nested
 djangorestframework-simplejwt
-
+werkzeug
+selenium
