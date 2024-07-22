@@ -8,11 +8,11 @@ INSERT INTO app_user (cpf, email, name, lname, username, status, role, password,
 
 -- Inserir dados na tabela Poll
 INSERT INTO app_poll (criation_date, finish_date, status, title, description, privacy, creator_id, category, tags) VALUES
-('2024-07-01', '2024-07-31', 'OPEN', 'Melhor livro', 'Escolha o melhor livro', 'PUBLIC', 1, 'CULTURE', 'livro'),
-('2024-07-01', '2024-07-20', 'CLOSED', 'Melhor feriado do ano', 'Escolha o melhor feriado do ano', 'PUBLIC', 1, 'RANDOM', 'feriado'),
-('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor cantor', 'Escolha o melhor cantor', 'RESTRICTED', 2, 'RANDOM', 'musica'),
-('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor anime', 'Escolha o melhor anime', 'RESTRICTED', 5, 'ANIMATION', 'anime'),
-('2024-07-05', '2024-07-20', 'OPEN', 'Melhor mangá', 'Escolha o melhor mangá', 'PUBLIC', 5, 'CULTURE', 'manga');
+('2024-07-01', '2024-07-31', 'OPEN', 'Melhor livro', 'Escolha o melhor livro', 'PUBLIC', 1, 'culture', 'livro'),
+('2024-07-01', '2024-07-20', 'CLOSED', 'Melhor feriado do ano', 'Escolha o melhor feriado do ano', 'PUBLIC', 1, 'random', 'feriado'),
+('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor cantor', 'Escolha o melhor cantor', 'RESTRICTED', 2, 'random', 'musica'),
+('2024-07-05', '2024-07-20', 'CLOSED', 'Melhor anime', 'Escolha o melhor anime', 'RESTRICTED', 5, 'animation', 'anime'),
+('2024-07-05', '2024-07-20', 'OPEN', 'Melhor mangá', 'Escolha o melhor mangá', 'PUBLIC', 5, 'culture', 'manga');
 
 -- Inserir dados na tabela Participation
 INSERT INTO app_participation (user_id, poll_id) VALUES
@@ -150,3 +150,137 @@ INSERT INTO app_whitelist (user_id, poll_id) VALUES
 INSERT INTO app_report (user_id, poll_id, text) VALUES
 (1, 1, 'Report 1'),
 (2, 2, 'Report 2');
+
+
+-- Inserir dados na tabela Poll
+INSERT INTO app_poll (criation_date, finish_date, status, title, description, privacy, creator_id, category, tags) VALUES
+-- Polls públicas
+('2024-07-10', '2024-07-20', 'OPEN', 'Melhor tecnologia do ano', 'Escolha a melhor tecnologia de 2024', 'PUBLIC', 2, 'technology', 'tecnologia'),
+('2024-07-12', '2024-08-01', 'OPEN', 'Melhor filme de 2024', 'Escolha o melhor filme de 2024', 'PUBLIC', 3, 'entertainment', 'filme'),
+('2024-07-15', '2024-08-05', 'OPEN', 'Melhor jogador de futebol', 'Escolha o melhor jogador de futebol', 'PUBLIC', 1, 'sports', 'futebol'),
+('2024-07-18', '2024-08-10', 'OPEN', 'Melhor destino turístico', 'Escolha o melhor destino turístico', 'PUBLIC', 2, 'tourism', 'destino'),
+('2024-07-20', '2024-08-15', 'OPEN', 'Melhor artista', 'Escolha o melhor artista do ano', 'PUBLIC', 3, 'art', 'artista'),
+('2024-07-22', '2024-08-01', 'OPEN', 'Melhor restaurante da cidade', 'Escolha o melhor restaurante da cidade', 'RESTRICTED', 4, 'food', 'restaurante'),
+('2024-07-25', '2024-08-05', 'OPEN', 'Melhor livro de ficção científica', 'Escolha o melhor livro de ficção científica', 'RESTRICTED', 5, 'culture', 'ficção'),
+('2024-07-28', '2024-08-10', 'OPEN', 'Melhor inovação tecnológica', 'Escolha a melhor inovação tecnológica de 2024', 'RESTRICTED', 1, 'technology', 'inovação'),
+
+-- Poll com várias questões
+('2024-07-30', '2024-08-15', 'OPEN', 'Sua opinião sobre diversos tópicos', 'Responda a várias perguntas sobre diferentes tópicos.', 'PUBLIC', 4, 'random', 'opinião');
+
+-- Inserir dados na tabela QuestionField
+INSERT INTO app_questionfield (title, max_qtd_choices, poll_id) VALUES
+-- Perguntas para novas polls
+-- Tecnologia
+('Qual é a melhor tecnologia do ano?', 1, 6),
+-- Filmes
+('Qual é o melhor filme de 2024?', 1, 7),
+-- Futebol
+('Quem é o melhor jogador de futebol?', 1, 8),
+-- Destinos
+('Qual é o melhor destino turístico?', 1, 9),
+-- Artistas
+('Quem é o melhor artista do ano?', 1, 10),
+
+-- Restaurantes
+('Qual é o melhor restaurante da cidade?', 1, 11),
+-- Livros
+('Qual é o melhor livro de ficção científica?', 1, 12),
+-- Inovações
+('Qual é a melhor inovação tecnológica?', 1, 13),
+
+-- Perguntas para a poll com várias questões
+('Qual é a sua cor favorita?', 1, 14),
+('Qual é o seu hobby preferido?', 1, 14),
+('Qual é a sua comida favorita?', 1, 14);
+
+-- Inserir dados na tabela Option
+INSERT INTO app_option (text, img, question_id) VALUES
+-- Opções para novas perguntas
+-- Tecnologia
+('Inteligência Artificial', '', 6),
+('Blockchain', '', 6),
+('Realidade Aumentada', '', 6),
+('Computação Quântica', '', 6),
+
+-- Filmes
+('Oppenheimer', '', 7),
+('Duna', '', 7),
+('Avatar 2', '', 7),
+('Spider-Man: Across the Spider-Verse', '', 7),
+
+-- Futebol
+('Lionel Messi', '', 8),
+('Cristiano Ronaldo', '', 8),
+('Kylian Mbappé', '', 8),
+('Neymar Jr.', '', 8),
+
+-- Destinos
+('Paris', '', 9),
+('Tóquio', '', 9),
+('Nova York', '', 9),
+('Rio de Janeiro', '', 9),
+
+-- Artistas
+('Taylor Swift', '', 10),
+('BTS', '', 10),
+('Adele', '', 10),
+('Ed Sheeran', '', 10),
+
+-- Restaurantes
+('Restaurante A', '', 11),
+('Restaurante B', '', 11),
+('Restaurante C', '', 11),
+('Restaurante D', '', 11),
+
+-- Livros
+('Neuromancer', '', 12),
+('Snow Crash', '', 12),
+('Hyperion', '', 12),
+('The Left Hand of Darkness', '', 12),
+
+-- Inovações
+('5G', '', 13),
+('Tecnologia de Imunização', '', 13),
+('Energia Renovável', '', 13),
+('Veículos Elétricos', '', 13),
+
+-- Opções para a poll com várias questões
+-- Cor favorita
+('Azul', '', 14),
+('Verde', '', 14),
+('Vermelho', '', 14),
+('Amarelo', '', 14),
+
+-- Hobby preferido
+('Ler', '', 15),
+('Esportes', '', 15),
+('Viajar', '', 15),
+('Cozinhar', '', 15),
+
+-- Comida favorita
+('Pizza', '', 16),
+('Sushi', '', 16),
+('Churrasco', '', 16),
+('Hambúrguer', '', 16);
+
+
+-- Inserir dados na tabela Vote
+INSERT INTO app_vote (hash, date) VALUES
+('hash17', '2024-07-05'),
+('hash18', '2024-07-05'),
+('hash20', '2024-07-05');
+
+
+-- Inserir dados na tabela Choice
+INSERT INTO app_choice (vote_id, option_id) VALUES
+(17, 63),
+(17, 69),
+(17, 74);
+
+INSERT INTO app_participation (user_id, poll_id) VALUES
+(1, 14),
+(2, 14),
+(3, 14),
+(4, 14),
+(5, 14);
+
