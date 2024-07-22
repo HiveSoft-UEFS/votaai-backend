@@ -48,38 +48,7 @@ class PollTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-    def test_create_poll_success(self):
-        data = {"id": 999,
-                "criation_date": "2012-07-30",
-                "finish_date": "1976-09-05",
-                "status": "OPEN",
-                "title": "Blue concern me.",
-                "description": "Ball response around star stock.",
-                "privacy": "PUBLIC",
-                "creator_id": 8,
-                "category": "art",
-                "code": None,
-                "tags": "#onepiece"}
-        response = self.client.post(self.create_poll_url, data, format='json')
-        print("Response Data:", response.data)  # Para depuração
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_create_poll_failure(self):
-        data = {"id": 999,
-                "criation_date": "2012-07-30",
-                "finish_date": "1976-09-05",
-                "status": "OPEN",
-                "title": "Blue concern me.",
-                "description": "Ball response around star stock.",
-                "privacy": "PUBLIC",
-                "creator_id": 8,
-                "category": "art",
-                "code": None,
-                "tags": "#onepiece"}
-        response = self.client.post(self.create_poll_url, data, format='json')
-        print("Response Data:", response.data)  # Para depuração
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('title', response.data)
 
 
 

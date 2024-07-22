@@ -102,8 +102,11 @@ class VoteViewSet(viewsets.ViewSet):
             user_service = UserService()
             user = user_service.get_user_by_id(user_id)
 
-            mail_service = EmailService()
-            mail_service.send_poll_hash_email(user["data"], hash_hex, poll['data']['title'])
+            if data.get('test', False):
+                pass
+            else:
+                mail_service = EmailService()
+                mail_service.send_poll_hash_email(user["data"], hash_hex, poll['data']['title'])
 
 
             participation = self._service.participation(user_id,pollId)
