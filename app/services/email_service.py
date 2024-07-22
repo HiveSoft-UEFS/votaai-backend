@@ -55,7 +55,6 @@ class EmailService:
         return self.send_email(destination, "Bem vindo ao Votaai!", body, 'html')
 
     def send_Protocol(self, destination, subject, report):
-        print(f"Login: {self.login}, Senha: {self.password}")
         code = datetime.now().strftime("%Y%m%d%H%M%S" + str(random.randint(100000, 999999)))
         body = self.contact.replace("{{ protocol }}", code)
         return (self.send_email(destination, "Obrigado por entrar em contato", body, "html"), self.send_email(self.login, "Report", f"{subject}\n\n{report}\n\n{code}", 'plain'))
