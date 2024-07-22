@@ -175,5 +175,17 @@ class ForgotPasswordView(viewsets.ViewSet):
         if user['success']:
             return Response(user['data'], status=status.HTTP_200_OK)
 
-             
+class ContactView(viewsets.ViewSet):
+    def contact(self, request):
+        email = request.data.get("email")
+        subject = request.data.get("subject")
+        report = request.data.get("message")
+        if not email or not subject or not report:
+            return Response({'error': 'Dados incompletos'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            _email_service = EmailService()
+            _email_service.send_protocol(email, subject, report)
+            return Response("Mensagem enviada com sucesso")
+        except Exception as e:
+            return Response({'error': f'Falha ao enviar mensagem: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
