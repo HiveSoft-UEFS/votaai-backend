@@ -56,6 +56,7 @@ class PollQueries:
             return poll
         except (Exception, psycopg2.Error) as error:
             print("Erro ao buscar dados no PostgreSQL", error)
+            raise 
         finally:
             if connection:
                 connection.close()
