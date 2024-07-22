@@ -175,5 +175,14 @@ class ForgotPasswordView(viewsets.ViewSet):
         if user['success']:
             return Response(user['data'], status=status.HTTP_200_OK)
 
-             
+class ContactView(viewsets.ViewSet):
+    def contact(self, request):
+        if request.method == 'POST':
+            _email_service = EmailService()
+            email = request.data.get("email")
+            subject = request.data.get("subject")
+            report = request.data.get("message")
+            _email_service.send_Protocol(email, subject, report)
+            return Response("Mensagem enviada com sucesso")
+        return Response({'erro': 'Método não permitido'}, status=405)
 
