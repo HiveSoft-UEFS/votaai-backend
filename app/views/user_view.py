@@ -177,12 +177,15 @@ class ForgotPasswordView(viewsets.ViewSet):
 
 class ContactView(viewsets.ViewSet):
     def contact(self, request):
-        if request.method == 'POST':
+        email = request.data.get("email")
+        subject = request.data.get("subject")
+        report = request.data.get("message")
+        if not email or not subject or not report:
+            return Response({'error': 'Dados incompletos'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
             _email_service = EmailService()
-            email = request.data.get("email")
-            subject = request.data.get("subject")
-            report = request.data.get("message")
-            _email_service.send_Protocol(email, subject, report)
+            _email_service.send_protocol(email, subject, report)
             return Response("Mensagem enviada com sucesso")
-        return Response({'erro': 'Método não permitido'}, status=405)
+        except Exception as e:
+            return Response({'error': f'Falha ao enviar mensagem: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
