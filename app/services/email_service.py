@@ -16,6 +16,8 @@ class EmailService:
     def __init__(self):
         self.welcome_template = self.load_template('../templates/welcome_email.html')
         self.forgot_password_template = self.load_template('../templates/forgot_password_email.html')
+        self.poll_hash_template = self.load_template('../templates/poll_hash_email.html')
+        self.contact = self.load_template("../templates/contact.html")
 
     def load_template(self, filepath):
         working_dir = os.path.dirname(os.path.abspath(__file__))
@@ -43,6 +45,16 @@ class EmailService:
         body = self.forgot_password_template.replace("{{ code }}", code)
         return self.send_email(user['email'], "Recuperação de senha", body, 'html')
 
+    def send_poll_hash_email(self, user, hash, poll_title):
+        body = self.poll_hash_template.replace("{{ poll_hash }}", hash)
+        body = body.replace("{{ poll_title }}", poll_title)
+        return self.send_email(user['email'], "Confirmação de voto", body, 'html')
+
     def send_welcome_email(self, destination, name):
         body = self.welcome_template.replace("{{ name }}", name)
         return self.send_email(destination, "Bem vindo ao Votaai!", body, 'html')
+
+    def send_protocol(self, destination, subject, report):
+        code = datetime.now().strftime("%Y%m%d%H%M%S" + str(random.randint(100000, 999999)))
+        body = self.contact.replace("{{ protocol }}", code)
+        return (self.send_email(destination, "Obrigado por entrar em contato", body, "html"), self.send_email(self.login, f"Report {code}", f"{subject}\n\n{report}\n\nContato {destination}", 'plain'))

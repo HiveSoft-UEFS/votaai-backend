@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>suport</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            max-width: 600px; /* Define a maximum width */
+            background-size: 100vh 100%;
+            background-repeat: no-repeat;
+            background-image: url("https://i.ibb.co/6BLqGJY/tela-De-Sobre-Inicio.png");
+        }
+        
+        .logo img {
+            height: 50%;
+            width: 50%;
+            margin-bottom: 10px;
+        }
+        
+        .logo h1 {
+            margin: 0;
+            font-size: 50px;
+            color: #04345C;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 2px solid #C4A109;
+            width: 70%;
+            margin-bottom: 15px;
+        }
+        
+        .recovery_code {
+            font-size: 18px;
+            color: black;
+            letter-spacing: 5px;
+        }
+        
+        .footer {
+            margin-top: -50px;
+            font-size: 5px;
+            color: #04345C;
+        }
+        
+        .footer img{
+          width: 40%;
+        }
+        
+        .start-text {
+            color: black;
+            font-size: 20px;
+            text-align: left;
+            padding-left: 30px;
+        }
+        
+        .body-text {
+          color: #333333;
+          font-size: 15px;
+          text-align: left;
+          padding-left: 30px;
+        }
+        
+    </style>
+</head>
+<body>
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center" style="padding: 20px;">
+                <div class="container">
+                    <div class="logo">
+                       <img src="https://i.ibb.co/jzT3Lmg/pixelcut-export.png" alt="hivesoft">
+                    </div>
+                    <hr>
+                    <div class="recovery_code">
+                        {{ protocol }}
+                    </div>
+                    <br>
+                    <p class = 'start-text'>Obrigado por entrar em contato!</p>
+                    <p class = 'body-text'>Agradecemos sua mensagem. Nossa equipe de suporte está analisando seu pedido e retornaremos o mais breve possível.</p>
+                    <p class = 'body-text'>Atenciosamente,
+                    <br/>
+                    Equipe de Suporte Hivesoft
+                    </p>
+                    <br>
+                    <br><br><br>
+                    <div class="footer">
+                        <img src="https://i.ibb.co/h7GxXpL/Hive-Soft-Inc.png" alt="Hive-Soft-Inc">
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -8,6 +8,9 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from app.db.queries.vote_queries import VoteQueries
 from app.services.vote_service import VoteService
+from app.services.poll_service import PollService
+from app.services.email_service import EmailService
+from app.services.user_service import UserService
 from app.serializers.vote_serializer import VoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
@@ -67,6 +70,7 @@ class VoteViewSet(viewsets.ViewSet):
 
            
             options = []
+            pollId = None
             for i in data:
                 pollId = i
                 for j in data[i]:
@@ -91,6 +95,15 @@ class VoteViewSet(viewsets.ViewSet):
                 hash_hex = hash_obj.hexdigest()
 
             vote = self._service.updateHash(hash_hex,vote['id'])
+
+            poll_service = PollService()
+            poll = poll_service.get_poll_by_id(pollId)
+
+            user_service = UserService()
+            user = user_service.get_user_by_id(user_id)
+
+            mail_service = EmailService()
+            mail_service.send_poll_hash_email(user["data"], hash_hex, poll['data']['title'])
 
 
             participation = self._service.participation(user_id,pollId)
