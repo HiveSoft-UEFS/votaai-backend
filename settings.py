@@ -130,6 +130,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'app.User'
 
 CORS_ALLOWED_ORIGINS = [
+    'https://votaai.micaelmuniz.com',
+    'http://votaai.micaelmuniz.com',
     'http://localhost:3000',  # Adicione o seu frontend React
 ]
 
