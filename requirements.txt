@@ -4,3 +4,4 @@ django-cors-headers
 factory-boy
 drf-writable-nested
 gunicorn
+psycopg2
