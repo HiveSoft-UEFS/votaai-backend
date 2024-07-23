@@ -1,5 +1,6 @@
 from app.db.connection import create_connection
 import psycopg2
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 class UserQueries:
@@ -80,42 +81,127 @@ class UserQueries:
     @staticmethod
     def update(user, data):
         print(data)
+        print("entrou em alterar email")
         connection = None
         try:
             connection = create_connection()
             cursor = connection.cursor()
             query = """
                 UPDATE app_user 
-                SET cpf = %s, 
+                SET
                     email = %s, 
-                    name = %s, 
-                    lname = %s, 
-                    username = %s, 
-                    status = %s, 
-                    role = %s, 
-                    password = %s, 
-                    is_active = %s, 
-                    is_staff = %s, 
-                    is_admin = %s 
+                    username = %s    
                 WHERE id = %s 
                 RETURNING *;
             """
 
             cursor.execute(query, (
-                data['cpf'],
+                
                 data['email'],
-                data['name'],
-                data['lname'],
-                data['username'],
-                data['status'],
-                data['role'],
-                data['password'],
-                data['is_active'],
-                data['is_staff'],
-                data['is_admin'],
+                data['username'],      
                 user['id']
             ))
 
+            connection.commit()
+
+            column_names = [desc[0] for desc in cursor.description]
+            user_data = cursor.fetchone()
+            if user_data:
+                return dict(zip(column_names, user_data))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao atualizar dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+
+    @staticmethod
+    def password_update(user, data):
+        print(user['data']['id'])
+        current_password = data['current_password']
+        new_password = data['new_password']
+        print(current_password)
+        print(new_password)
+
+
+        connection = None
+        try:
+            connection = create_connection()
+            cursor = connection.cursor()
+
+            # Buscar a senha atual do usuário no banco de dados
+            query = "SELECT password FROM app_user WHERE id = %s;"
+            cursor.execute(query, (user['data']['id'],))
+            stored_password = cursor.fetchone()[0]
+            print(stored_password, current_password)
+
+            # Verificar se a senha atual está correta
+            if not stored_password == current_password:                
+                raise Exception('A senha atual está incorreta.')
+
+            
+       
+            update_query = """
+                UPDATE app_user 
+                SET password = %s
+                WHERE id = %s 
+                RETURNING *;
+            """
+            
+            cursor.execute(update_query, (
+                new_password,
+                user['data']['id']
+            ))
+
+            connection.commit()
+
+            column_names = [desc[0] for desc in cursor.description]
+            user_data = cursor.fetchone()
+            if user_data:
+                return  dict(zip(column_names, user_data))
+            else:
+                raise Exception( 'Erro ao atualizar a senha.')
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao atualizar a senha no PostgreSQL:", error)
+            raise Exception('Erro ao atualizar a senha no banco de dados.')
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+               
+              
+    @staticmethod
+    def partial_update(user, data):
+        connection = None
+        try:
+            connection = create_connection()
+            cursor = connection.cursor()
+
+            # Step 1: Initialize the lists
+            set_clauses = []
+            values = []
+
+            # Step 2: Construct the SET clause and values list
+            for key, value in data.items():
+                set_clauses.append(f"{key} = %s")
+                values.append(value)
+
+            # Step 3: Join the SET clauses
+            set_clause = ", ".join(set_clauses)
+
+            # Step 4: Construct the final query
+            query = f"""
+                UPDATE app_user
+                SET {set_clause}
+                WHERE id = %s
+                RETURNING *;
+            """
+
+            # Execute the query with the values and the user's id
+            cursor.execute(query, values + [user['id']])
             connection.commit()
 
             column_names = [desc[0] for desc in cursor.description]

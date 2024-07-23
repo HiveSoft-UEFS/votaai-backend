@@ -5,3 +5,4 @@ factory-boy
 drf-writable-nested
 gunicorn
 psycopg2
+dj_database_url

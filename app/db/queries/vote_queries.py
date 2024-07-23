@@ -14,36 +14,32 @@ class VoteQueries:
 
             cursor.execute("SELECT id FROM app_vote WHERE hash = %s", [hash])
             row_vote = cursor.fetchone()
-
             if not row_vote:
-                return None
+                raise Exception('Voto não encontrado.')
 
             vote_id = row_vote[0]
 
 
             cursor.execute("SELECT id FROM app_choice WHERE vote_id = %s", [vote_id])
-            row_choice = cursor.fetchone()
-
+            row_choice = cursor.fetchall()
             if not row_choice:
-                return None
+                raise Exception('Escolha não encontrada.')
 
-            choice_id = row_choice[0]
+            choice_ids = [row[0] for row in row_choice]           
 
-
-            cursor.execute("SELECT option_id FROM app_choice WHERE id = %s", [choice_id])
-            row_option = cursor.fetchone()
+            cursor.execute("SELECT option_id FROM app_choice WHERE id IN %s", [tuple(choice_ids)])
+            row_option = cursor.fetchall()
 
             if not row_option:
-                return None
+                raise Exception('Opcao não encontrada.')
 
-            option_id = row_option[0]
+            option_ids = [row[0] for row in row_option]
 
-
-            cursor.execute("SELECT question_id FROM app_option WHERE id = %s", [option_id])
-            row_question = cursor.fetchone()
+            cursor.execute("SELECT DISTINCT question_id FROM app_option WHERE id IN %s", [tuple(option_ids)])
+            row_question = cursor.fetchall()
 
             if not row_question:
-                return None
+                raise Exception('Questao não encontrada.')
 
             question_id = row_question[0]
 
@@ -51,7 +47,7 @@ class VoteQueries:
             row_poll = cursor.fetchone()
 
             if not row_poll:
-                return None
+              raise Exception('Enquete não encontrada.')
 
             poll_id = row_poll[0]
 
@@ -59,7 +55,7 @@ class VoteQueries:
             row_creator = cursor.fetchone()
 
             if not row_creator:
-                return None
+                raise Exception('Criador não encontrado.')
 
             creator_id = row_creator[0]
             cursor.execute("SELECT username FROM app_user WHERE id = %s", [creator_id])
@@ -70,7 +66,7 @@ class VoteQueries:
             poll_details = cursor.fetchone()
 
             if not poll_details:
-                return None
+                raise Exception('Detalhes da enquente não encontrado.')
 
             creation_date = poll_details[0]
             finish_date = poll_details[1]
@@ -86,12 +82,14 @@ class VoteQueries:
                 question_id = row_question[0]
                 question_title = row_question[1]
 
-                cursor.execute("SELECT text FROM app_option WHERE question_id = %s", [question_id])
-                options = []
+                cursor.execute("SELECT id, text FROM app_option WHERE question_id = %s AND id IN %s", [question_id, tuple(option_ids)])
                 rows_options = cursor.fetchall()
+                print(option_ids)
+                options = []
+               
 
                 for row_option in rows_options:
-                    option_text = row_option[0]
+                    option_text = row_option[1]
                     options.append({
                         'text': option_text
                     })
@@ -115,6 +113,7 @@ class VoteQueries:
             return response_data
         except (Exception, psycopg2.Error) as error:
             print("Erro ao buscar dados no PostgreSQL", error)
+            raise Exception(error)
         finally:
             if cursor:
                 cursor.connection.close()
@@ -136,4 +135,128 @@ class VoteQueries:
         finally:
             if cursor:
                 cursor.connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+
+    @staticmethod
+    def createChoice(idOption,idVote):
+        try:
+            connection = create_connection()
+            cursor =connection.cursor()
+            if not cursor:
+                return
+            querry = "INSERT INTO app_choice (option_id,vote_id) VALUES (%s, %s) RETURNING *;"
+            cursor.execute(querry, (idOption,idVote))
+            connection.commit()
+            column_names = [desc[0] for desc in cursor.description]
+            choice_data = cursor.fetchone()
+            if choice_data:
+                return dict(zip(column_names, choice_data))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao inserir dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+
+    @staticmethod
+    def createVote(date):
+        try:
+            connection = create_connection()
+            cursor =connection.cursor()
+            if not cursor:
+                return
+            querry = "INSERT INTO app_vote (date, hash) VALUES (%s, %s) RETURNING *;"
+            cursor.execute(querry,(date,'NULL'))
+            connection.commit()
+            column_names = [desc[0] for desc in cursor.description]
+            vote = cursor.fetchone()
+            if vote:
+                return dict(zip(column_names, vote))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao inserir dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+
+
+    @staticmethod
+    def updateVoteHash(hash,id_vote):
+        try:
+            connection = create_connection()
+            cursor =connection.cursor()
+            if not cursor:
+                return
+            querry = "UPDATE app_vote SET hash = %s WHERE id = %s RETURNING *;"
+            cursor.execute(querry,(hash,id_vote))
+            connection.commit()
+            column_names = [desc[0] for desc in cursor.description]
+            vote = cursor.fetchone()
+            if vote:
+                return dict(zip(column_names, vote))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao atualizar dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+
+
+    def getLastVote():
+        try:
+            connection = create_connection()
+            cursor =connection.cursor()
+            if not cursor:
+                return
+            querry = "SELECT * FROM app_vote ORDER BY id DESC LIMIT 1;"
+            cursor.execute(querry)
+
+            column_names = [desc[0] for desc in cursor.description]
+            vote = cursor.fetchone()
+            if not vote:
+                return None
+            if vote:
+                return dict(zip(column_names, vote))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao atualizar dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
+                print("Conexão com o PostgreSQL encerrada")
+
+
+
+    def createParticipation(user,poll):
+        try:
+            connection = create_connection()
+            cursor =connection.cursor()
+            if not cursor:
+                return
+            querry = "INSERT INTO app_participation (user_id, poll_id) VALUES (%s, %s) RETURNING *;"
+            cursor.execute(querry,(user,poll))
+            connection.commit()
+            column_names = [desc[0] for desc in cursor.description]
+            participation = cursor.fetchone()
+            if participation:
+                return dict(zip(column_names, participation))
+            else:
+                return None
+        except (Exception, psycopg2.Error) as error:
+            print("Erro ao inserir dados no PostgreSQL:", error)
+            raise
+        finally:
+            if connection:
+                connection.close()
                 print("Conexão com o PostgreSQL encerrada")

@@ -1,13 +1,29 @@
+import json
+import hashlib
+import jwt
+
+
+from django.conf import settings
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from app.db.queries.vote_queries import VoteQueries
 from app.services.vote_service import VoteService
+from app.services.poll_service import PollService
+from app.services.email_service import EmailService
+from app.services.user_service import UserService
 from app.serializers.vote_serializer import VoteSerializer
-
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class VoteViewSet(viewsets.ViewSet):
-
+    permission_classes = [IsAuthenticated]
     _service = VoteService()
+
+    def get_permissions(self):
+        if self.action in ['list', 'create', 'retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
 
     # GET
     def list(self, request):
@@ -17,6 +33,7 @@ class VoteViewSet(viewsets.ViewSet):
         return Response({'error': votes['error']}, status=status.HTTP_404_NOT_FOUND)
 
     # GET
+    
     def retrieve(self, request, pk=None):
         # Validação de parâmetros
         if pk is None:
@@ -24,7 +41,75 @@ class VoteViewSet(viewsets.ViewSet):
 
         # Recupera o voto
         vote = self._service.get_vote_by_hash(pk)
-        print(vote['data'])
+      
         if vote['success']:
+            print(vote)
             return Response(vote['data'], status=status.HTTP_200_OK)
         return Response({'error': vote['error']}, status=status.HTTP_404_NOT_FOUND)
+    
+    # POST
+    def create(self, request):
+        
+        if request.method == 'POST':
+            authorization_header = request.META['HTTP_AUTHORIZATION']
+            token = authorization_header.split()[1] if authorization_header else None
+                        
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['user_id']
+
+
+            data = json.loads(request.body)
+            print(data)
+            lastvote = self._service.getLastVote()
+            vote = self._service.createVote()
+            if lastvote['success']:
+                lastvote = lastvote['data']
+
+            if vote['success']:
+                vote = vote['data']
+
+           
+            options = []
+            pollId = None
+            for i in data:
+                pollId = i
+                for j in data[i]:
+                    for y in data[i][j]:
+                        options.append(y)
+            choices = self._service.createChoices(options, vote['id'])
+
+
+            hash_obj = hashlib.md5()
+
+            if lastvote:
+                ultima_hash = lastvote['hash']
+                obj = {"ultima_hash":ultima_hash, "choices" : choices}
+                obj_json = json.dumps(obj, sort_keys=True)
+                hash_obj.update(obj_json.encode())
+                hash_hex = hash_obj.hexdigest()
+
+            else:
+                obj = {"ultima_hash":None, "choices" : choices}
+                obj_json = json.dumps(obj, sort_keys=True)
+                hash_obj.update(obj_json.encode())
+                hash_hex = hash_obj.hexdigest()
+
+            vote = self._service.updateHash(hash_hex,vote['id'])
+
+            poll_service = PollService()
+            poll = poll_service.get_poll_by_id(pollId)
+
+            user_service = UserService()
+            user = user_service.get_user_by_id(user_id)
+
+            if data.get('test', False):
+                pass
+            else:
+                mail_service = EmailService()
+                mail_service.send_poll_hash_email(user["data"], hash_hex, poll['data']['title'])
+
+
+            participation = self._service.participation(user_id,pollId)
+            print(participation)
+
+        return Response (vote)
