@@ -1,0 +1,1 @@
+web: gunicorn votaai_backend.wsgi

@@ -6,3 +6,4 @@ drf-writable-nested
 djangorestframework-simplejwt
 werkzeug
 selenium
+gunicorn
