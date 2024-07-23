@@ -1,4 +1,10 @@
+from datetime import datetime
+from datetime import datetime, timezone
+
+from app.db.queries.recovery_token_queries import RecoveryTokenQueries
 from app.db.queries.user_queries import UserQueries
+from app.db.queries.poll_queries import PollQueries
+from app.models import User
 
 
 class UserService:
@@ -43,9 +49,9 @@ class UserService:
         try:
             data['role'] = 'USER'
             data['status'] = 'INACTIVE'
-            data['is_active'] = 'False'
-            data['is_staff'] = 'False'
-            data['is_admin'] = 'False'
+            data['is_active'] = 'True'
+            data['is_staff'] = 'True'
+            data['is_admin'] = 'True'
 
             user = UserQueries.insert(data)
             return {"success": True, "data": user}
@@ -59,3 +65,63 @@ class UserService:
             return {"success": True, "data": user}
         except Exception as e:
             return {"success": False, "error": str(e)}
+
+    def partial_update_user(self, user, data):
+        try:
+            user = UserQueries.partial_update(user, data)
+            return {"success": True, "data": user}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def get_by_recovery_token(self, token):
+        try:
+            token = RecoveryTokenQueries.get_by_token(token)
+
+            expiration_date = token[3]
+            if expiration_date < datetime.now(timezone.utc):
+                return {"success": False, "error": "Token expired"}
+
+            user_id = token[-1]
+            user = UserQueries.get_where('id', user_id)
+            return {"success": True, "data": user}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    def get_poll_user(self, user):
+        try:
+            polls = UserQueries.get_poll(user)
+            return {"success": True, "data": polls}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+        
+    def get_polls_by_creator_id(self, creator_id):
+        try:
+            polls = PollQueries.get_by_creator_id(creator_id)
+            total_polls = len(polls)
+            return {"success": True, "total_polls": total_polls, "data": polls}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+        
+    
+    def password_update(self, user_data, request_data):
+
+        try:
+            user = UserQueries.password_update(user_data, request_data) 
+            return {"success": True, "data": user}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+        
+        
+        current_password = request_data['current_password']
+        new_password = request_data['new_password']
+        
+        # Lógica para verificar a senha atual e atualizar para a nova senha
+        user = User.objects.get(id=user_data['id'])  # Exemplo: busque o usuário por ID
+        
+        if not user.check_password(current_password):
+            return {'success': False, 'error': 'Senha atual incorreta'}
+        
+        user.set_password(new_password)  # Atualiza a senha
+        user.save()  # Salva as alterações
+
+        return {'success': True, 'data': 'Senha atualizada com sucesso'}
