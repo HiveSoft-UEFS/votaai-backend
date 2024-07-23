@@ -6,3 +6,4 @@ drf-writable-nested
 gunicorn
 psycopg2
 dj_database_url
+rest_framework_simplejwt
