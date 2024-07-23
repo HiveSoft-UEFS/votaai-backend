@@ -1,1 +1,1 @@
-web: gunicorn votaai_backend.wsgi
+web: gunicorn wsgi
