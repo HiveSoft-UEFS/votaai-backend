@@ -164,7 +164,7 @@ class PollQueries:
                     "status": poll[1],
                     "data_criacao": poll[2],
                     "titulo": poll[3],
-                    "tipo": "criada"
+                    "tipo": "Criada"
                 })
 
             # Adicionando as votações participadas ao resultado
@@ -173,7 +173,7 @@ class PollQueries:
                     "status": poll[1],
                     "data_criacao": poll[2],
                     "titulo": poll[3],
-                    "tipo": "participada"
+                    "tipo": "Participada"
                 })
 
             return {"polls": polls}
